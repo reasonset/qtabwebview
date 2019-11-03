@@ -20,7 +20,7 @@ Put `qtabwebview.py` on your `$PATH`.
 qtabwebview.py <address>
 ```
 
-You can choose profile name with `$qtwview_profile`.
+You can choose profile name with `$qtwview_profile` environment variable.
 
 # Keyboard Shortcuts
 

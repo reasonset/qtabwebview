@@ -15,6 +15,8 @@ class TabWidget(QTabWidget):
         self.tabCloseRequested.connect(self.close_handler)
         view = HtmlView(self)
         self.view = view
+
+        ##### Set Curtom profile #####
         pfn = os.environ.get("qtwview_profile")
         if (pfn):
             pf = QWebEngineProfile(pfn, view)
@@ -22,17 +24,21 @@ class TabWidget(QTabWidget):
             view.setPage(page)
         profile = view.page().profile()
         profile.setHttpUserAgent(view.page().profile().httpUserAgent() + " " + THIS_APP_UA)
+        ##############################
 
+        ##### Address bar #####
         addrbar = QLineEdit()
         addrbar.setSizePolicy(QSizePolicy.Expanding, addrbar.sizePolicy().verticalPolicy())
         addrbar.returnPressed.connect(self.change_location)
         self.addrbar = addrbar
 
         self.setCornerWidget(addrbar)
+        #######################
 
         view.load(url)
         ix = self.addTab(view, "loading ...")
 
+        ##### Define keyboard shortcuts #####
         QShortcut(QtGui.QKeySequence(Qt.CTRL | Qt.Key_PageDown), self).activated.connect(self.pagedown)
         QShortcut(QtGui.QKeySequence(Qt.CTRL | Qt.Key_PageUp), self).activated.connect(self.pageup)
         QShortcut(QtGui.QKeySequence(Qt.CTRL | Qt.Key_W), self).activated.connect(self.closetab)
@@ -40,6 +46,7 @@ class TabWidget(QTabWidget):
         QShortcut(QtGui.QKeySequence(Qt.Key_F5), self).activated.connect(self.reloadtab)
         QShortcut(QtGui.QKeySequence(Qt.ALT | Qt.Key_Left), self).activated.connect(self.pageback)
         QShortcut(QtGui.QKeySequence(Qt.ALT | Qt.Key_Right), self).activated.connect(self.pagefw)
+        ####################################
 
     def pagedown(self):
         nextnum = self.currentIndex() + 1
@@ -69,9 +76,7 @@ class TabWidget(QTabWidget):
 
     def change_location(self):
         url = self.addrbar.text()
-        if re.match('^[a-z]+://', url):
-            pass # do nothing.
-        else:
+        if not re.match('^[a-z]+://', url):
             url = "http://" + url
         self.widget(self.currentIndex()).load(QUrl(url))
         
@@ -84,7 +89,7 @@ class HtmlView(QWebEngineView):
     def createWindow(self, windowType):
         if windowType == QWebEnginePage.WebBrowserTab:
             webView = HtmlView(self.tab)
-            ix = self.tab.addTab(webView, "Loading...")
+            ix = self.tab.addTab(webView, "Loading…")
             self.tab.setCurrentIndex(ix)
             return webView
         return QWebEngineView.createWindow(self, windowType)
